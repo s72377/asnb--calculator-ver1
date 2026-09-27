@@ -1,0 +1,2503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ASNB Investment Dashboard V2.4</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f4f7fb;
+    color:#1f2937;
+}
+
+header{
+    background:linear-gradient(135deg,#063970,#0b5fa5);
+    color:white;
+    padding:30px 20px;
+}
+
+.header-container{
+    max-width:1200px;
+    margin:auto;
+}
+
+header h1{
+    margin:0 0 8px;
+    font-size:30px;
+}
+
+header p{
+    margin:0;
+    opacity:.9;
+}
+
+.container{
+    max-width:1200px;
+    margin:25px auto;
+    padding:0 16px;
+}
+
+.card{
+    background:white;
+    border-radius:16px;
+    padding:20px;
+    margin-bottom:20px;
+    box-shadow:0 4px 16px rgba(0,0,0,.07);
+}
+
+h2{
+    margin-top:0;
+    color:#063970;
+}
+
+h3{
+    color:#174a78;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:16px;
+}
+
+.grid3{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+}
+
+label{
+    font-weight:bold;
+    font-size:14px;
+    display:block;
+    margin-bottom:6px;
+}
+
+input,
+select{
+    width:100%;
+    padding:11px;
+    border:1px solid #cbd5e1;
+    border-radius:9px;
+    font-size:15px;
+}
+
+button{
+    border:0;
+    border-radius:9px;
+    padding:12px 18px;
+    font-weight:bold;
+    cursor:pointer;
+    margin-right:6px;
+}
+
+.primary{
+    background:#0b5fa5;
+    color:white;
+}
+
+.secondary{
+    background:#e7eef7;
+    color:#063970;
+}
+
+.gold{
+    background:#d6a52d;
+    color:white;
+}
+
+button:hover{
+    opacity:.9;
+}
+
+.kpis{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+}
+
+.kpi{
+    background:#eef6ff;
+    border-radius:12px;
+    padding:15px;
+}
+
+.kpi span{
+    display:block;
+    font-size:12px;
+    color:#64748b;
+}
+
+.kpi strong{
+    display:block;
+    font-size:22px;
+    margin-top:5px;
+    color:#063970;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:12px;
+}
+
+th,
+td{
+    padding:10px;
+    border-bottom:1px solid #e5e7eb;
+    text-align:right;
+}
+
+th:first-child,
+td:first-child{
+    text-align:left;
+}
+
+th{
+    background:#edf4fb;
+    color:#174a78;
+}
+
+.scenario{
+    border-radius:12px;
+    padding:16px;
+}
+
+.low{
+    background:#fff1f2;
+}
+
+.expected{
+    background:#eff6ff;
+}
+
+.high{
+    background:#f0fdf4;
+}
+
+.note{
+    font-size:13px;
+    color:#64748b;
+    line-height:1.5;
+}
+
+.badge{
+    display:inline-block;
+    padding:5px 9px;
+    border-radius:999px;
+    background:#e5eef8;
+    color:#174a78;
+    font-size:12px;
+}
+
+.chartbox{
+    height:390px;
+}
+
+.hidden{
+    display:none;
+}
+
+.footer{
+    text-align:center;
+    color:#64748b;
+    font-size:12px;
+    padding:20px;
+}
+
+@media(max-width:800px){
+
+    .grid,
+    .grid3{
+        grid-template-columns:1fr;
+    }
+
+    .kpis{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .chartbox{
+        height:300px;
+    }
+
+    header h1{
+        font-size:24px;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+<header>
+
+<div class="header-container">
+
+<h1>
+ASNB Investment, Dividend & Zakat Dashboard
+</h1>
+
+<p>
+Interactive investment illustration, scenario analysis and customer education tool — Version 2.4
+</p>
+
+</div>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- =========================
+     INVESTMENT INPUT
+========================= -->
+
+<div class="card">
+
+<h2>1. Investment Inputs</h2>
+
+<div class="grid">
+
+<div>
+
+<label>
+Product / Illustration Type
+</label>
+
+<select id="product">
+
+<option value="fixed">
+Fixed-Price Fund — Illustration
+</option>
+
+<option value="autolabur">
+Auto Labur — Monthly Investment Illustration
+</option>
+
+<option value="variable">
+Variable-Price Fund — User Defined NAV
+</option>
+
+</select>
+
+</div>
+
+
+<div>
+
+<label>
+Investment Period (Years)
+</label>
+
+<input
+id="years"
+type="number"
+min="1"
+max="40"
+value="10"
+>
+
+</div>
+
+
+<div>
+
+<label>
+Monthly Investment (RM)
+</label>
+
+<input
+id="monthly"
+type="number"
+min="0"
+step="50"
+value="500"
+>
+
+</div>
+
+
+<div>
+
+<label>
+Annual Lump-Sum Investment (RM)
+</label>
+
+<input
+id="annual"
+type="number"
+min="0"
+step="500"
+value="6000"
+>
+
+</div>
+
+
+<div>
+
+<label>
+Expected Annual Dividend / Distribution (%)
+</label>
+
+<input
+id="rate"
+type="number"
+min="0"
+max="30"
+step="0.1"
+value="5"
+>
+
+</div>
+
+
+<div>
+
+<label>
+Initial Investment (RM)
+</label>
+
+<input
+id="initial"
+type="number"
+min="0"
+step="100"
+value="0"
+>
+
+</div>
+
+</div>
+
+
+<!-- VARIABLE PRICE -->
+
+<div
+id="variableInputs"
+class="grid hidden"
+style="margin-top:16px"
+>
+
+<div>
+
+<label>
+Purchase NAV (RM/unit)
+</label>
+
+<input
+id="purchaseNAV"
+type="number"
+min="0.0001"
+step="0.0001"
+value="1.00"
+>
+
+</div>
+
+
+<div>
+
+<label>
+Current / Selling NAV (RM/unit)
+</label>
+
+<input
+id="currentNAV"
+type="number"
+min="0.0001"
+step="0.0001"
+value="1.05"
+>
+
+</div>
+
+
+<div>
+
+<label>
+Distribution per Unit (RM)
+</label>
+
+<input
+id="distPerUnit"
+type="number"
+min="0"
+step="0.0001"
+value="0.05"
+>
+
+</div>
+
+</div>
+
+
+<br>
+
+<button
+class="primary"
+onclick="calculate()"
+>
+Calculate Dashboard
+</button>
+
+
+<button
+class="secondary"
+onclick="resetDashboard()"
+>
+Reset
+</button>
+
+
+<button
+class="gold"
+onclick="downloadPDF()"
+>
+Download PDF Report
+</button>
+
+
+<p class="note">
+
+This dashboard is an educational and illustrative tool.
+Dividend/distribution rates, NAVs and zakat calculations are user inputs
+and are not guarantees of future returns.
+
+</p>
+
+</div>
+
+
+
+<!-- =========================
+     SUMMARY
+========================= -->
+
+<div class="card">
+
+<h2>
+2. Investment Summary
+</h2>
+
+<div class="kpis">
+
+
+<div class="kpi">
+
+<span>
+Total Monthly Contributions
+</span>
+
+<strong id="kpiMonthly">
+RM0
+</strong>
+
+</div>
+
+
+<div class="kpi">
+
+<span>
+Monthly Strategy Final Value
+</span>
+
+<strong id="kpiMonthlyValue">
+RM0
+</strong>
+
+</div>
+
+
+<div class="kpi">
+
+<span>
+Annual Lump-Sum Final Value
+</span>
+
+<strong id="kpiAnnualValue">
+RM0
+</strong>
+
+</div>
+
+
+<div class="kpi">
+
+<span>
+Expected Monthly Strategy Gain
+</span>
+
+<strong id="kpiGain">
+RM0
+</strong>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+<!-- =========================
+     COMPARISON
+========================= -->
+
+<div class="card">
+
+<h2>
+3. Monthly vs Annual Lump-Sum Comparison
+</h2>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>
+Measure
+</th>
+
+<th>
+Monthly Investment
+</th>
+
+<th>
+Annual Lump Sum
+</th>
+
+</tr>
+
+</thead>
+
+
+<tbody id="comparisonBody">
+</tbody>
+
+</table>
+
+
+<p class="note">
+
+The comparison uses a simplified compounding illustration.
+
+</p>
+
+</div>
+
+
+
+<!-- =========================
+     SCENARIO
+========================= -->
+
+<div class="card">
+
+<h2>
+4. Scenario Analysis
+</h2>
+
+<div class="grid3">
+
+
+<div class="scenario low">
+
+<h3>
+Lower Scenario
+</h3>
+
+<p>
+<span
+class="badge"
+id="lowRate"
+>
+0%
+</span>
+</p>
+
+<h3 id="lowValue">
+RM0
+</h3>
+
+<p class="note">
+Illustrative lower distribution assumption.
+</p>
+
+</div>
+
+
+<div class="scenario expected">
+
+<h3>
+Expected Scenario
+</h3>
+
+<p>
+
+<span
+class="badge"
+id="expectedRate"
+>
+0%
+</span>
+
+</p>
+
+<h3 id="expectedValue">
+RM0
+</h3>
+
+<p class="note">
+Illustrative expected distribution assumption.
+</p>
+
+</div>
+
+
+<div class="scenario high">
+
+<h3>
+Higher Scenario
+</h3>
+
+<p>
+
+<span
+class="badge"
+id="highRate"
+>
+0%
+</span>
+
+</p>
+
+<h3 id="highValue">
+RM0
+</h3>
+
+<p class="note">
+Illustrative higher distribution assumption.
+</p>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+<!-- =========================
+     PROJECTION
+========================= -->
+
+<div class="card">
+
+<h2>
+5. Long-Term Investment Projection
+</h2>
+
+
+<div class="chartbox">
+
+<canvas id="growthChart">
+</canvas>
+
+</div>
+
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>
+Year
+</th>
+
+<th>
+Monthly Contribution
+</th>
+
+<th>
+Monthly Dividend
+</th>
+
+<th>
+Monthly Final Value
+</th>
+
+<th>
+Annual Final Value
+</th>
+
+</tr>
+
+</thead>
+
+
+<tbody id="projectionBody">
+</tbody>
+
+</table>
+
+</div>
+
+
+
+<!-- =========================
+     SENSITIVITY
+========================= -->
+
+<div class="card">
+
+<h2>
+6. Investment Amount Sensitivity
+</h2>
+
+<p class="note">
+
+This section illustrates how different monthly investment amounts
+may affect the projected final value.
+
+</p>
+
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>
+Monthly Investment
+</th>
+
+<th>
+Total Contribution
+</th>
+
+<th>
+Estimated Dividend / Gain
+</th>
+
+<th>
+Projected Final Value
+</th>
+
+</tr>
+
+</thead>
+
+
+<tbody id="sensitivityBody">
+</tbody>
+
+</table>
+
+</div>
+
+
+
+<!-- =========================
+     VARIABLE PRICE
+========================= -->
+
+<div class="card">
+
+<h2>
+7. Variable-Price Fund Illustration
+</h2>
+
+
+<div class="kpis">
+
+
+<div class="kpi">
+
+<span>
+Estimated Units
+</span>
+
+<strong id="units">
+0
+</strong>
+
+</div>
+
+
+<div class="kpi">
+
+<span>
+Current Value
+</span>
+
+<strong id="currentValue">
+RM0
+</strong>
+
+</div>
+
+
+<div class="kpi">
+
+<span>
+Estimated Distribution
+</span>
+
+<strong id="variableDividend">
+RM0
+</strong>
+
+</div>
+
+
+<div class="kpi">
+
+<span>
+Total Gain / Loss
+</span>
+
+<strong id="variableGain">
+RM0
+</strong>
+
+</div>
+
+
+</div>
+
+
+<p class="note">
+
+Units = investment ÷ purchase NAV.
+
+Current value = units × current NAV.
+
+</p>
+
+</div>
+
+
+
+<!-- =========================
+     ZAKAT
+========================= -->
+
+<div class="card">
+
+<h2>
+8. Zakat Illustration
+</h2>
+
+
+<div class="grid">
+
+
+<div>
+
+<label>
+Investment / Savings Balance (RM)
+</label>
+
+<input
+id="zakatBalance"
+type="number"
+value="10000"
+>
+
+</div>
+
+
+<div>
+
+<label>
+Nisab Threshold (RM)
+</label>
+
+<input
+id="nisab"
+type="number"
+value="25000"
+>
+
+</div>
+
+
+<div>
+
+<label>
+Zakat Rate (%)
+</label>
+
+<input
+id="zakatRate"
+type="number"
+value="2.5"
+step="0.1"
+>
+
+</div>
+
+
+<div>
+
+<label>
+Gross Dividend / Return (RM)
+</label>
+
+<input
+id="grossDividend"
+type="number"
+value="500"
+>
+
+</div>
+
+
+</div>
+
+
+<br>
+
+
+<div class="kpis">
+
+
+<div class="kpi">
+
+<span>
+Nisab Status
+</span>
+
+<strong id="nisabStatus">
+-
+</strong>
+
+</div>
+
+
+<div class="kpi">
+
+<span>
+Estimated Zakat
+</span>
+
+<strong id="zakatAmount">
+RM0
+</strong>
+
+</div>
+
+
+<div class="kpi">
+
+<span>
+Net After Zakat
+</span>
+
+<strong id="netDividend">
+RM0
+</strong>
+
+</div>
+
+
+<div class="kpi">
+
+<span>
+Effective Net Rate
+</span>
+
+<strong id="netRate">
+0%
+</strong>
+
+</div>
+
+
+</div>
+
+
+<p class="note">
+
+Zakat rules may differ according to authority, state, fund type
+and applicable zakat method.
+
+</p>
+
+</div>
+
+
+
+<!-- =========================
+     AUTO LABUR
+========================= -->
+
+<div class="card">
+
+<h2>
+9. Customer Education: Auto Labur
+</h2>
+
+
+<p>
+
+Regular monthly investment can help customers plan contributions
+systematically rather than relying only on a once-a-year lump-sum contribution.
+
+The dashboard can demonstrate different investment amounts,
+time periods and illustrative distribution scenarios.
+
+</p>
+
+
+<div class="grid3">
+
+
+<div class="kpi">
+
+<span>
+Example Monthly Saving
+</span>
+
+<strong>
+RM500
+</strong>
+
+</div>
+
+
+<div class="kpi">
+
+<span>
+Example Annual Saving
+</span>
+
+<strong>
+RM6,000
+</strong>
+
+</div>
+
+
+<div class="kpi">
+
+<span>
+Long-Term Focus
+</span>
+
+<strong>
+5–30 Years
+</strong>
+
+</div>
+
+
+</div>
+
+
+<p class="note">
+
+The dashboard may support customer education and awareness
+of regular investment facilities such as Auto Labur.
+
+</p>
+
+</div>
+
+
+
+<!-- =========================
+     PROJECT VALUE
+========================= -->
+
+<div class="card">
+
+<h2>
+10. Project Method & Business Use
+</h2>
+
+
+<div class="grid">
+
+
+<div>
+
+<h3>
+Problem
+</h3>
+
+<p>
+
+Customers may not clearly understand the difference between
+regular monthly investment and annual lump-sum investment.
+
+</p>
+
+</div>
+
+
+<div>
+
+<h3>
+Solution
+</h3>
+
+<p>
+
+An interactive dashboard provides calculations,
+comparisons, charts and scenario analysis.
+
+</p>
+
+</div>
+
+
+<div>
+
+<h3>
+Analysis Used
+</h3>
+
+<p>
+
+Mathematical calculation, compound-growth modelling,
+sensitivity analysis, scenario analysis and data visualization.
+
+</p>
+
+</div>
+
+
+<div>
+
+<h3>
+Potential Benefit
+</h3>
+
+<p>
+
+Supports customer education, staff explanation
+and awareness of regular investment options.
+
+</p>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<div class="footer">
+
+ASNB Investment Dashboard V2.4 |
+Educational / illustrative tool |
+Verify official rates and rules before actual investment or zakat decisions.
+
+</div>
+
+
+
+<script>
+
+
+/* =========================
+   GLOBAL
+========================= */
+
+let chart;
+
+
+/* =========================
+   FORMAT MONEY
+========================= */
+
+function money(value){
+
+    return new Intl.NumberFormat(
+        'en-MY',
+        {
+            style:'currency',
+            currency:'MYR',
+            minimumFractionDigits:2
+        }
+    ).format(Number(value)||0);
+
+}
+
+
+/* =========================
+   GET NUMBER
+========================= */
+
+function num(id){
+
+    return Number(
+        document.getElementById(id).value
+    ) || 0;
+
+}
+
+
+/* =========================
+   MONTHLY PROJECTION
+========================= */
+
+function monthlyProjection(
+    monthly,
+    years,
+    annualRate,
+    initial=0
+){
+
+    const months = years * 12;
+
+    const monthlyRate =
+        annualRate / 100 / 12;
+
+    let value = initial;
+
+    let contribution = initial;
+
+    const yearly=[];
+
+
+    for(
+        let month=1;
+        month<=months;
+        month++
+    ){
+
+        value += monthly;
+
+        contribution += monthly;
+
+        value *= (1 + monthlyRate);
+
+
+        if(month % 12 === 0){
+
+            yearly.push({
+
+                year:month/12,
+
+                contribution:contribution,
+
+                value:value,
+
+                dividend:value-contribution
+
+            });
+
+        }
+
+    }
+
+
+    return {
+
+        value:value,
+
+        contribution:contribution,
+
+        dividend:value-contribution,
+
+        yearly:yearly
+
+    };
+
+}
+
+
+
+/* =========================
+   ANNUAL PROJECTION
+========================= */
+
+function annualProjection(
+    annual,
+    years,
+    annualRate,
+    initial=0
+){
+
+    let value=initial;
+
+    let contribution=initial;
+
+    const yearly=[];
+
+
+    for(
+        let year=1;
+        year<=years;
+        year++
+    ){
+
+        value += annual;
+
+        contribution += annual;
+
+        value *= (
+            1 + annualRate/100
+        );
+
+
+        yearly.push({
+
+            year:year,
+
+            contribution:contribution,
+
+            value:value,
+
+            dividend:value-contribution
+
+        });
+
+    }
+
+
+    return {
+
+        value:value,
+
+        contribution:contribution,
+
+        dividend:value-contribution,
+
+        yearly:yearly
+
+    };
+
+}
+
+
+
+/* =========================
+   MAIN CALCULATION
+========================= */
+
+function calculate(){
+
+    const years =
+        Math.max(
+            1,
+            Math.floor(num('years'))
+        );
+
+
+    const monthly =
+        num('monthly');
+
+
+    const annual =
+        num('annual');
+
+
+    const rate =
+        num('rate');
+
+
+    const initial =
+        num('initial');
+
+
+    const monthlyP =
+        monthlyProjection(
+            monthly,
+            years,
+            rate,
+            initial
+        );
+
+
+    const annualP =
+        annualProjection(
+            annual,
+            years,
+            rate,
+            initial
+        );
+
+
+
+    /* KPI */
+
+    document.getElementById(
+        'kpiMonthly'
+    ).textContent =
+        money(monthly * years * 12);
+
+
+    document.getElementById(
+        'kpiMonthlyValue'
+    ).textContent =
+        money(monthlyP.value);
+
+
+    document.getElementById(
+        'kpiAnnualValue'
+    ).textContent =
+        money(annualP.value);
+
+
+    document.getElementById(
+        'kpiGain'
+    ).textContent =
+        money(monthlyP.dividend);
+
+
+
+    /* COMPARISON */
+
+    document.getElementById(
+        'comparisonBody'
+    ).innerHTML = `
+
+        <tr>
+
+            <td>Total Contribution</td>
+
+            <td>
+                ${money(monthlyP.contribution)}
+            </td>
+
+            <td>
+                ${money(annualP.contribution)}
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Estimated Dividend / Gain
+            </td>
+
+            <td>
+                ${money(monthlyP.dividend)}
+            </td>
+
+            <td>
+                ${money(annualP.dividend)}
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Projected Final Value
+            </td>
+
+            <td>
+                ${money(monthlyP.value)}
+            </td>
+
+            <td>
+                ${money(annualP.value)}
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Investment Period
+            </td>
+
+            <td>
+                ${years} years
+            </td>
+
+            <td>
+                ${years} years
+            </td>
+
+        </tr>
+
+    `;
+
+
+
+    /* SCENARIO */
+
+    const lowerRate =
+        Math.max(0,rate-2);
+
+
+    const higherRate =
+        rate+2;
+
+
+    const lower =
+        monthlyProjection(
+            monthly,
+            years,
+            lowerRate,
+            initial
+        );
+
+
+    const higher =
+        monthlyProjection(
+            monthly,
+            years,
+            higherRate,
+            initial
+        );
+
+
+    document.getElementById(
+        'lowRate'
+    ).textContent =
+        lowerRate.toFixed(2)+'%';
+
+
+    document.getElementById(
+        'expectedRate'
+    ).textContent =
+        rate.toFixed(2)+'%';
+
+
+    document.getElementById(
+        'highRate'
+    ).textContent =
+        higherRate.toFixed(2)+'%';
+
+
+    document.getElementById(
+        'lowValue'
+    ).textContent =
+        money(lower.value);
+
+
+    document.getElementById(
+        'expectedValue'
+    ).textContent =
+        money(monthlyP.value);
+
+
+    document.getElementById(
+        'highValue'
+    ).textContent =
+        money(higher.value);
+
+
+
+    /* YEARLY TABLE */
+
+    let rows='';
+
+
+    monthlyP.yearly.forEach(
+        (row,index)=>{
+
+            const annualRow =
+                annualP.yearly[index];
+
+
+            rows += `
+
+            <tr>
+
+                <td>
+                    ${row.year}
+                </td>
+
+                <td>
+                    ${money(row.contribution)}
+                </td>
+
+                <td>
+                    ${money(row.dividend)}
+                </td>
+
+                <td>
+                    ${money(row.value)}
+                </td>
+
+                <td>
+                    ${money(annualRow.value)}
+                </td>
+
+            </tr>
+
+            `;
+
+        }
+    );
+
+
+    document.getElementById(
+        'projectionBody'
+    ).innerHTML=rows;
+
+
+
+    /* SENSITIVITY */
+
+    const amounts=[
+        200,
+        300,
+        500,
+        750,
+        1000,
+        1500,
+        2000
+    ];
+
+
+    document.getElementById(
+        'sensitivityBody'
+    ).innerHTML =
+
+        amounts.map(
+            amount=>{
+
+                const p =
+                    monthlyProjection(
+                        amount,
+                        years,
+                        rate,
+                        initial
+                    );
+
+
+                return `
+
+                <tr>
+
+                    <td>
+                        ${money(amount)}
+                    </td>
+
+                    <td>
+                        ${money(p.contribution)}
+                    </td>
+
+                    <td>
+                        ${money(p.dividend)}
+                    </td>
+
+                    <td>
+                        ${money(p.value)}
+                    </td>
+
+                </tr>
+
+                `;
+
+            }
+        ).join('');
+
+
+
+    updateChart(
+        monthlyP,
+        annualP,
+        lower,
+        higher
+    );
+
+
+    calculateVariable();
+
+    calculateZakat();
+
+}
+
+
+
+/* =========================
+   CHART
+========================= */
+
+function updateChart(
+    monthlyP,
+    annualP,
+    lower,
+    higher
+){
+
+    const labels =
+        monthlyP.yearly.map(
+            x=>'Year '+x.year
+        );
+
+
+    const monthlyData =
+        monthlyP.yearly.map(
+            x=>x.value
+        );
+
+
+    const annualData =
+        annualP.yearly.map(
+            x=>x.value
+        );
+
+
+    const lowerData =
+        lower.yearly.map(
+            x=>x.value
+        );
+
+
+    const higherData =
+        higher.yearly.map(
+            x=>x.value
+        );
+
+
+    if(chart){
+
+        chart.destroy();
+
+    }
+
+
+    chart = new Chart(
+
+        document.getElementById(
+            'growthChart'
+        ),
+
+        {
+
+            type:'line',
+
+            data:{
+
+                labels:labels,
+
+                datasets:[
+
+                    {
+
+                        label:
+                        'Monthly Investment',
+
+                        data:
+                        monthlyData,
+
+                        tension:.25
+
+                    },
+
+
+                    {
+
+                        label:
+                        'Annual Lump Sum',
+
+                        data:
+                        annualData,
+
+                        tension:.25
+
+                    },
+
+
+                    {
+
+                        label:
+                        'Lower Scenario',
+
+                        data:
+                        lowerData,
+
+                        tension:.25
+
+                    },
+
+
+                    {
+
+                        label:
+                        'Higher Scenario',
+
+                        data:
+                        higherData,
+
+                        tension:.25
+
+                    }
+
+                ]
+
+            },
+
+
+            options:{
+
+                responsive:true,
+
+                maintainAspectRatio:false,
+
+                plugins:{
+
+                    legend:{
+                        position:'bottom'
+                    }
+
+                },
+
+                scales:{
+
+                    y:{
+
+                        beginAtZero:true,
+
+                        ticks:{
+
+                            callback:
+                            function(value){
+
+                                return 'RM ' +
+                                Number(value)
+                                .toLocaleString();
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    );
+
+}
+
+
+
+/* =========================
+   VARIABLE PRICE
+========================= */
+
+function calculateVariable(){
+
+    const box =
+        document.getElementById(
+            'variableInputs'
+        );
+
+
+    const type =
+        document.getElementById(
+            'product'
+        ).value;
+
+
+    if(type === 'variable'){
+
+        box.classList.remove(
+            'hidden'
+        );
+
+    }else{
+
+        box.classList.add(
+            'hidden'
+        );
+
+    }
+
+
+    const investment =
+        num('initial') +
+        num('monthly');
+
+
+    const purchase =
+        num('purchaseNAV');
+
+
+    const current =
+        num('currentNAV');
+
+
+    const distribution =
+        num('distPerUnit');
+
+
+    if(purchase > 0){
+
+        const units =
+            investment / purchase;
+
+
+        const currentValue =
+            units * current;
+
+
+        const dividend =
+            units * distribution;
+
+
+        const gain =
+            currentValue +
+            dividend -
+            investment;
+
+
+        document.getElementById(
+            'units'
+        ).textContent =
+            units.toLocaleString(
+                undefined,
+                {
+                    maximumFractionDigits:4
+                }
+            );
+
+
+        document.getElementById(
+            'currentValue'
+        ).textContent =
+            money(currentValue);
+
+
+        document.getElementById(
+            'variableDividend'
+        ).textContent =
+            money(dividend);
+
+
+        document.getElementById(
+            'variableGain'
+        ).textContent =
+            money(gain);
+
+    }
+
+}
+
+
+
+/* =========================
+   ZAKAT
+========================= */
+
+function calculateZakat(){
+
+    const balance =
+        num('zakatBalance');
+
+
+    const nisab =
+        num('nisab');
+
+
+    const rate =
+        num('zakatRate') / 100;
+
+
+    const gross =
+        num('grossDividend');
+
+
+    const eligible =
+        balance >= nisab &&
+        nisab > 0;
+
+
+    const zakat =
+        eligible
+        ? balance * rate
+        : 0;
+
+
+    const net =
+        gross - zakat;
+
+
+    const effective =
+        gross > 0
+        ? (net/gross)*100
+        : 0;
+
+
+    document.getElementById(
+        'nisabStatus'
+    ).textContent =
+        eligible
+        ? 'Above Nisab'
+        : 'Below Nisab';
+
+
+    document.getElementById(
+        'zakatAmount'
+    ).textContent =
+        money(zakat);
+
+
+    document.getElementById(
+        'netDividend'
+    ).textContent =
+        money(net);
+
+
+    document.getElementById(
+        'netRate'
+    ).textContent =
+        effective.toFixed(2)+'%';
+
+}
+
+
+
+/* =========================
+   PRODUCT CHANGE
+========================= */
+
+document
+.getElementById('product')
+.addEventListener(
+    'change',
+    calculateVariable
+);
+
+
+
+/* =========================
+   RESET
+========================= */
+
+function resetDashboard(){
+
+    document.getElementById(
+        'product'
+    ).value='fixed';
+
+
+    document.getElementById(
+        'years'
+    ).value=10;
+
+
+    document.getElementById(
+        'monthly'
+    ).value=500;
+
+
+    document.getElementById(
+        'annual'
+    ).value=6000;
+
+
+    document.getElementById(
+        'rate'
+    ).value=5;
+
+
+    document.getElementById(
+        'initial'
+    ).value=0;
+
+
+    document.getElementById(
+        'purchaseNAV'
+    ).value=1;
+
+
+    document.getElementById(
+        'currentNAV'
+    ).value=1.05;
+
+
+    document.getElementById(
+        'distPerUnit'
+    ).value=.05;
+
+
+    calculate();
+
+}
+
+
+
+/* =========================
+   PDF REPORT
+========================= */
+
+async function downloadPDF(){
+
+    calculate();
+
+
+    const {jsPDF} =
+        window.jspdf;
+
+
+    const doc =
+        new jsPDF();
+
+
+    const years =
+        Math.floor(
+            num('years')
+        );
+
+
+    const monthly =
+        num('monthly');
+
+
+    const annual =
+        num('annual');
+
+
+    const rate =
+        num('rate');
+
+
+    const initial =
+        num('initial');
+
+
+    const monthlyP =
+        monthlyProjection(
+            monthly,
+            years,
+            rate,
+            initial
+        );
+
+
+    const annualP =
+        annualProjection(
+            annual,
+            years,
+            rate,
+            initial
+        );
+
+
+    doc.setFontSize(18);
+
+    doc.text(
+        'ASNB Investment Dashboard Report',
+        14,
+        18
+    );
+
+
+    doc.setFontSize(10);
+
+    doc.text(
+        'Educational / illustrative report',
+        14,
+        25
+    );
+
+
+    /* INPUT TABLE */
+
+    doc.autoTable({
+
+        startY:32,
+
+        head:[
+            ['Input','Value']
+        ],
+
+        body:[
+
+            [
+                'Product',
+                document
+                .getElementById('product')
+                .selectedOptions[0]
+                .text
+            ],
+
+            [
+                'Investment Period',
+                years+' years'
+            ],
+
+            [
+                'Monthly Investment',
+                money(monthly)
+            ],
+
+            [
+                'Annual Lump Sum',
+                money(annual)
+            ],
+
+            [
+                'Illustrative Rate',
+                rate.toFixed(2)+'%'
+            ],
+
+            [
+                'Initial Investment',
+                money(initial)
+            ]
+
+        ],
+
+        theme:'grid'
+
+    });
+
+
+
+    /* COMPARISON */
+
+    let y =
+        doc.lastAutoTable.finalY + 8;
+
+
+    doc.autoTable({
+
+        startY:y,
+
+        head:[
+            [
+                'Measure',
+                'Monthly',
+                'Annual Lump Sum'
+            ]
+        ],
+
+        body:[
+
+            [
+                'Total Contribution',
+                money(monthlyP.contribution),
+                money(annualP.contribution)
+            ],
+
+            [
+                'Estimated Gain',
+                money(monthlyP.dividend),
+                money(annualP.dividend)
+            ],
+
+            [
+                'Projected Final Value',
+                money(monthlyP.value),
+                money(annualP.value)
+            ]
+
+        ],
+
+        theme:'grid'
+
+    });
+
+
+
+    /* YEARLY TABLE */
+
+    y =
+        doc.lastAutoTable.finalY + 8;
+
+
+    const yearlyTable =
+        monthlyP.yearly.map(
+            row=>{
+
+                const annualRow =
+                    annualP.yearly[
+                        row.year-1
+                    ];
+
+
+                return [
+
+                    row.year,
+
+                    money(row.contribution),
+
+                    money(row.dividend),
+
+                    money(row.value),
+
+                    money(annualRow.value)
+
+                ];
+
+            }
+        );
+
+
+    doc.autoTable({
+
+        startY:y,
+
+        head:[
+
+            [
+
+                'Year',
+
+                'Contribution',
+
+                'Monthly Gain',
+
+                'Monthly Value',
+
+                'Annual Value'
+
+            ]
+
+        ],
+
+        body:yearlyTable,
+
+        theme:'striped',
+
+        styles:{
+            fontSize:8
+        }
+
+    });
+
+
+
+    /* ZAKAT PAGE */
+
+    doc.addPage();
+
+
+    doc.setFontSize(15);
+
+    doc.text(
+        'Zakat Illustration',
+        14,
+        18
+    );
+
+
+    doc.autoTable({
+
+        startY:25,
+
+        head:[
+            ['Item','Value']
+        ],
+
+        body:[
+
+            [
+                'Balance',
+                money(
+                    num('zakatBalance')
+                )
+            ],
+
+            [
+                'Nisab',
+                money(
+                    num('nisab')
+                )
+            ],
+
+            [
+                'Zakat Rate',
+                num('zakatRate')
+                .toFixed(2)+'%'
+            ],
+
+            [
+                'Estimated Zakat',
+                document
+                .getElementById(
+                    'zakatAmount'
+                ).textContent
+            ],
+
+            [
+                'Gross Dividend',
+                money(
+                    num('grossDividend')
+                )
+            ],
+
+            [
+                'Net After Zakat',
+                document
+                .getElementById(
+                    'netDividend'
+                ).textContent
+            ]
+
+        ],
+
+        theme:'grid'
+
+    });
+
+
+    doc.setFontSize(9);
+
+
+    doc.text(
+
+        'Note: This dashboard uses simplified mathematical illustrations and user-defined assumptions.',
+
+        14,
+        285
+
+    );
+
+
+    doc.save(
+        'ASNB_Investment_Dashboard_V2.4_Report.pdf'
+    );
+
+}
+
+
+
+/* =========================
+   START
+========================= */
+
+calculate();
+
+</script>
+
+</body>
+</html>
